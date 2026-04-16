@@ -51,7 +51,7 @@ npm run preview
 
 ## 项目结构
 
-```
+```text
 ├── public/
 │   ├── config.json      # 线稿配置文件
 │   ├── images/          # 线稿图片资源
@@ -91,6 +91,7 @@ npm run preview
 然后将对应的 PNG 图片放入 `public/images/` 目录。
 
 线稿图片建议：
+
 - 使用透明背景 PNG 格式
 - 线条清晰，适合儿童涂色
 - 图片尺寸保持一致
