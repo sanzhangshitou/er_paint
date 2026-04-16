@@ -1,6 +1,11 @@
 import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
 
+import configData from '@/static/config.json'
+
+// 使用 Vite glob 导入所有图片
+const imageModules = import.meta.glob('@/static/images/*.png', { eager: true, import: 'default' }) as Record<string, string>
+
 export interface AnimalItem {
   id: string
   name: string
@@ -39,24 +44,24 @@ export const usePaintStore = defineStore('paint', () => {
 
   const SIZES = [8, 16, 26]
 
-  async function loadConfig() {
+  function getImagePath(imageName: string): string {
+    const key = `/src/static/images/${imageName}`
+    return imageModules[key] ?? ''
+  }
+
+  function loadConfig() {
     loading.value = true
     error.value = null
     try {
-      const response = await fetch('/config.json', { cache: 'no-store' })
-      if (!response.ok) {
-        throw new Error('Failed to load /config.json')
-      }
-      const payload = (await response.json()) as ConfigPayload
-      animals.value = (payload.list ?? []).map((item) => ({
-        ...item,
-        id: item.id ?? encodeURIComponent(item.name.trim().toLowerCase()),
-        path: item.path.startsWith('./')
-          ? `/${item.path.slice(2)}`
-          : item.path.startsWith('/')
-            ? item.path
-            : `/${item.path}`,
-      }))
+      const payload = configData as ConfigPayload
+      animals.value = (payload.list ?? []).map((item) => {
+        const imageName = item.path.replace(/^\.\//, '').replace(/^images\//, '')
+        return {
+          ...item,
+          id: item.id ?? encodeURIComponent(item.name.trim().toLowerCase()),
+          path: getImagePath(imageName),
+        }
+      })
     } catch (e) {
       error.value = e instanceof Error ? e.message : 'Unknown error'
     } finally {
