@@ -464,13 +464,34 @@ button {
   height: 100%;
 }
 
+.drawing-surface {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 22px;
+}
+
+.drawing-artboard {
+  position: relative;
+  max-width: 100%;
+  max-height: 100%;
+  width: 100%;
+  height: 100%;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow:
+    0 18px 36px rgba(121, 83, 39, 0.08),
+    inset 0 0 0 1px rgba(175, 136, 78, 0.08);
+}
+
 .stage-paint {
   touch-action: none;
   cursor: crosshair;
 }
 
 .stage-image {
-  object-fit: contain;
+  object-fit: fill;
   pointer-events: none;
   mix-blend-mode: multiply;
 }
@@ -741,65 +762,47 @@ button {
     gap: 12px;
   }
 
-  /* 画室页面移动端样式：强制横屏 */
-  html,
-  body,
-  #app {
-    width: 100vw;
-    height: 100vh;
-    overflow: hidden;
-  }
-
-  body {
-    position: fixed;
-    inset: 0;
-  }
-
   .app-shell-studio {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vh;
-    height: 100vw;
-    overflow: hidden;
-    transform-origin: top left;
-    transform: rotate(90deg) translateY(-100%);
+    position: relative;
+    width: 100%;
+    min-height: 100vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    transform: none;
   }
 
   .page,
   .studio-page {
-    width: min(100vh - 6px, 100%);
-    min-height: 100vw;
-    padding: 4px 0;
+    width: calc(100vw - 14px);
+    min-height: auto;
+    padding: 8px 0 16px;
   }
 
   .studio-page {
-    height: 100vw;
+    height: auto;
   }
 
   .studio-layout {
-    grid-template-columns: minmax(0, 1fr) 136px;
-    grid-template-rows: minmax(0, 1fr);
-    align-items: start;
-    gap: 4px;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
     padding: 0;
-    min-height: 100%;
-    height: 100%;
+    min-height: auto;
+    height: auto;
   }
 
   .studio-main {
     grid-template-rows: auto minmax(0, 1fr);
-    gap: 4px;
+    gap: 8px;
     min-height: 0;
-    height: 100%;
+    height: auto;
   }
 
   .mobile-palette {
     display: block;
-    padding: 6px 8px;
-    border-radius: 14px;
+    padding: 8px 10px;
+    border-radius: 18px;
     position: sticky;
-    top: 2px;
+    top: 8px;
     z-index: 8;
   }
 
@@ -810,89 +813,95 @@ button {
   .canvas-panel,
   .panel,
   .tool-tray {
-    padding: 6px;
-    border-radius: 12px;
+    padding: 8px;
+    border-radius: 18px;
   }
 
   .palette-grid-mobile {
     grid-template-columns: repeat(12, minmax(0, 1fr));
-    grid-auto-rows: 26px;
+    grid-auto-rows: 30px;
     justify-content: stretch;
-    gap: 3px;
+    gap: 4px;
     overflow: hidden;
   }
 
   .palette-grid-mobile .swatch {
-    min-height: 26px;
+    min-height: 30px;
     border-radius: 8px;
   }
 
   .canvas-panel {
     min-height: auto;
-    padding: 2px;
+    padding: 0;
     min-width: 0;
     overflow: hidden;
   }
 
   .drawing-stage {
-    min-height: calc(100vw - 58px);
-    height: calc(100vw - 58px);
+    min-height: min(68vh, 520px);
+    height: min(68vh, 520px);
     aspect-ratio: auto;
     border-radius: 16px;
   }
 
   .sidebar {
-    gap: 4px;
-    position: sticky;
-    top: 2px;
-    align-self: start;
-    width: 136px;
+    gap: 8px;
+    position: static;
+    align-self: auto;
+    width: 100%;
   }
 
   .tool-stack {
-    gap: 4px;
+    gap: 8px;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    align-items: stretch;
   }
 
-  .tool-row-colors .pencil-column {
-    gap: 4px;
+  .tool-row {
+    min-width: 0;
+  }
+
+  .tool-row-size,
+  .tool-row:last-child {
+    grid-column: span 2;
   }
 
   .tool-switcher,
   .action-row {
-    gap: 4px;
+    gap: 6px;
   }
 
   .tool-button,
   .back-button,
   .ghost-button,
   .cta-button {
-    padding: 6px;
-    font-size: 11px;
+    padding: 10px;
+    font-size: 12px;
   }
 
   .icon-button {
-    min-width: 30px;
-    min-height: 30px;
+    min-width: 44px;
+    min-height: 44px;
     padding: 0;
   }
 
   .icon-tool {
-    min-height: 30px;
+    min-height: 44px;
   }
 
   .icon-button svg,
   .icon-tool svg {
-    width: 14px;
-    height: 14px;
+    width: 18px;
+    height: 18px;
   }
 
   .size-presets {
-    gap: 2px;
+    gap: 6px;
   }
 
   .size-choice {
-    width: 22px;
-    height: 22px;
+    width: 30px;
+    height: 30px;
   }
 
   .size-dot {
@@ -917,47 +926,47 @@ button {
 @media (max-width: 640px) {
   .page,
   .studio-page {
-    width: min(100vh - 6px, 100%);
-    padding: 2px 0;
+    width: calc(100vw - 10px);
+    padding: 6px 0 14px;
   }
 
   .studio-layout {
-    grid-template-columns: minmax(0, 1fr) 112px;
-    gap: 3px;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 8px;
     padding: 0;
-    min-height: 100%;
+    min-height: auto;
   }
 
   .gallery,
   .studio-layout {
-    padding-left: 10px;
-    padding-right: 10px;
+    padding-left: 0;
+    padding-right: 0;
   }
 
   .mobile-palette {
-    padding: 4px 6px;
-    top: 1px;
+    padding: 6px 8px;
+    top: 6px;
   }
 
   .palette-grid-mobile {
     grid-template-columns: repeat(12, minmax(0, 1fr));
-    grid-auto-rows: 20px;
-    gap: 2px;
+    grid-auto-rows: 24px;
+    gap: 3px;
   }
 
   .palette-grid-mobile .swatch {
-    min-height: 20px;
+    min-height: 24px;
   }
 
   .canvas-panel,
   .panel,
   .tool-tray {
-    padding: 4px;
+    padding: 6px;
   }
 
   .drawing-stage {
-    min-height: calc(100vw - 40px);
-    height: calc(100vw - 40px);
+    min-height: min(62vh, 420px);
+    height: min(62vh, 420px);
   }
 
   .swatch.active::after {
@@ -965,18 +974,18 @@ button {
   }
 
   .icon-button {
-    min-width: 24px;
-    min-height: 24px;
+    min-width: 40px;
+    min-height: 40px;
   }
 
   .icon-tool {
-    min-height: 24px;
+    min-height: 40px;
   }
 
   .icon-button svg,
   .icon-tool svg {
-    width: 12px;
-    height: 12px;
+    width: 16px;
+    height: 16px;
   }
 
   .tool-switcher,
@@ -989,12 +998,12 @@ button {
   }
 
   .size-presets {
-    gap: 2px;
+    gap: 4px;
   }
 
   .size-choice {
-    width: 18px;
-    height: 18px;
+    width: 28px;
+    height: 28px;
   }
 
   .size-dot {
@@ -1002,12 +1011,11 @@ button {
   }
 
   .sidebar {
-    width: 112px;
-    gap: 3px;
-    top: 1px;
+    width: 100%;
+    gap: 6px;
   }
 
-  .tool-row-colors .pencil-column {
-    gap: 3px;
+  .tool-stack {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }

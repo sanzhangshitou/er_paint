@@ -10,34 +10,46 @@ const props = defineProps<{
 const store = usePaintStore()
 
 const stageRef = ref<HTMLDivElement | null>(null)
+const artboardRef = ref<HTMLDivElement | null>(null)
 const canvasRef = ref<HTMLCanvasElement | null>(null)
 const imageRef = ref<HTMLImageElement | null>(null)
+const artboardStyle = ref({
+  width: '100%',
+  height: '100%',
+})
+
+const artworkSize = {
+  width: ref(1),
+  height: ref(1),
+}
 
 let drawing = false
 let lastX = 0
 let lastY = 0
+let resizeObserver: ResizeObserver | null = null
 
-function resizeCanvas() {
+function getContext() {
+  return canvasRef.value?.getContext('2d') ?? null
+}
+
+function resizeCanvas(width: number, height: number) {
   const canvas = canvasRef.value
-  const stage = stageRef.value
-  if (!canvas || !stage) return
+  if (!canvas) return
 
-  const ctx = canvas.getContext('2d')
+  const ctx = getContext()
   if (!ctx) return
 
   const ratio = Math.max(window.devicePixelRatio || 1, 1)
-  const rect = stage.getBoundingClientRect()
 
-  // 保存现有内容
   const snapshot = document.createElement('canvas')
   snapshot.width = canvas.width
   snapshot.height = canvas.height
   snapshot.getContext('2d')?.drawImage(canvas, 0, 0)
 
-  canvas.width = Math.max(1, Math.floor(rect.width * ratio))
-  canvas.height = Math.max(1, Math.floor(rect.height * ratio))
-  canvas.style.width = `${rect.width}px`
-  canvas.style.height = `${rect.height}px`
+  canvas.width = Math.max(1, Math.floor(width * ratio))
+  canvas.height = Math.max(1, Math.floor(height * ratio))
+  canvas.style.width = `${width}px`
+  canvas.style.height = `${height}px`
 
   ctx.setTransform(1, 0, 0, 1, 0, 0)
   ctx.scale(ratio, ratio)
@@ -45,8 +57,33 @@ function resizeCanvas() {
   ctx.lineJoin = 'round'
 
   if (snapshot.width > 0 && snapshot.height > 0) {
-    ctx.drawImage(snapshot, 0, 0, rect.width, rect.height)
+    ctx.drawImage(snapshot, 0, 0, width, height)
   }
+}
+
+function updateArtboardLayout() {
+  const stage = stageRef.value
+  if (!stage) return
+
+  const stageRect = stage.getBoundingClientRect()
+  const maxWidth = Math.max(stageRect.width, 1)
+  const maxHeight = Math.max(stageRect.height, 1)
+  const aspectRatio = artworkSize.width.value / artworkSize.height.value || 1
+
+  let width = maxWidth
+  let height = width / aspectRatio
+
+  if (height > maxHeight) {
+    height = maxHeight
+    width = height * aspectRatio
+  }
+
+  artboardStyle.value = {
+    width: `${width}px`,
+    height: `${height}px`,
+  }
+
+  resizeCanvas(width, height)
 }
 
 function getPoint(event: PointerEvent): { x: number; y: number } {
@@ -60,9 +97,7 @@ function getPoint(event: PointerEvent): { x: number; y: number } {
 }
 
 function applyStrokeStyle() {
-  const canvas = canvasRef.value
-  if (!canvas) return
-  const ctx = canvas.getContext('2d')
+  const ctx = getContext()
   if (!ctx) return
 
   ctx.lineWidth = store.brushSize
@@ -76,9 +111,7 @@ function applyStrokeStyle() {
 }
 
 function drawSegment(x1: number, y1: number, x2: number, y2: number) {
-  const canvas = canvasRef.value
-  if (!canvas) return
-  const ctx = canvas.getContext('2d')
+  const ctx = getContext()
   if (!ctx) return
 
   applyStrokeStyle()
@@ -88,10 +121,22 @@ function drawSegment(x1: number, y1: number, x2: number, y2: number) {
   ctx.stroke()
 }
 
+function syncArtworkSize() {
+  const image = imageRef.value
+  if (!image) return
+
+  const naturalWidth = image.naturalWidth || 1
+  const naturalHeight = image.naturalHeight || 1
+  artworkSize.width.value = naturalWidth
+  artworkSize.height.value = naturalHeight
+  updateArtboardLayout()
+}
+
 function beginDraw(event: PointerEvent) {
   const canvas = canvasRef.value
   if (!canvas) return
 
+  event.preventDefault()
   drawing = true
   const point = getPoint(event)
   lastX = point.x
@@ -102,6 +147,8 @@ function beginDraw(event: PointerEvent) {
 
 function moveDraw(event: PointerEvent) {
   if (!drawing) return
+
+  event.preventDefault()
   const point = getPoint(event)
   drawSegment(lastX, lastY, point.x, point.y)
   lastX = point.x
@@ -120,36 +167,61 @@ function endDraw(event: PointerEvent) {
 }
 
 onMounted(() => {
-  resizeCanvas()
-  window.addEventListener('resize', resizeCanvas)
-
   const canvas = canvasRef.value
   if (canvas) {
     canvas.addEventListener('pointerdown', beginDraw)
     canvas.addEventListener('pointermove', moveDraw)
     canvas.addEventListener('pointerup', endDraw)
-    canvas.addEventListener('pointerleave', endDraw)
     canvas.addEventListener('pointercancel', endDraw)
   }
 
   const image = imageRef.value
   if (image) {
-    image.addEventListener('load', resizeCanvas, { once: true })
+    if (image.complete) {
+      syncArtworkSize()
+    } else {
+      image.addEventListener('load', syncArtworkSize, { once: true })
+    }
+  }
+
+  if (typeof ResizeObserver !== 'undefined') {
+    resizeObserver = new ResizeObserver(() => {
+      updateArtboardLayout()
+    })
+
+    if (stageRef.value) {
+      resizeObserver.observe(stageRef.value)
+    }
+  } else {
+    window.addEventListener('resize', updateArtboardLayout)
   }
 })
 
 onUnmounted(() => {
-  window.removeEventListener('resize', resizeCanvas)
+  window.removeEventListener('resize', updateArtboardLayout)
+  resizeObserver?.disconnect()
+
+  const canvas = canvasRef.value
+  if (canvas) {
+    canvas.removeEventListener('pointerdown', beginDraw)
+    canvas.removeEventListener('pointermove', moveDraw)
+    canvas.removeEventListener('pointerup', endDraw)
+    canvas.removeEventListener('pointercancel', endDraw)
+  }
 })
 </script>
 
 <template>
-  <canvas ref="canvasRef" id="paint-canvas" class="stage-paint"></canvas>
-  <img
-    ref="imageRef"
-    id="line-art"
-    class="stage-image"
-    :src="imagePath"
-    :alt="`${animalName} 线稿`"
-  />
+  <div ref="stageRef" class="drawing-surface">
+    <div ref="artboardRef" class="drawing-artboard" :style="artboardStyle">
+      <canvas ref="canvasRef" id="paint-canvas" class="stage-paint"></canvas>
+      <img
+        ref="imageRef"
+        id="line-art"
+        class="stage-image"
+        :src="imagePath"
+        :alt="`${animalName} 线稿`"
+      />
+    </div>
+  </div>
 </template>
