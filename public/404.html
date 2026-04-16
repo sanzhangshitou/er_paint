@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8">
+    <title>童趣涂色小画室</title>
+    <script>
+      // SPA 404 重定向处理
+      // 只对子路径进行重定向，避免首页死循环
+      const segment = window.location.pathname.split('/er_paint')[1] || '/'
+      if (segment !== '/') {
+        sessionStorage.redirect = segment + window.location.search
+        window.location.replace('/er_paint/')
+      }
+    </script>
+  </head>
+  <body>
+    <p>正在重定向...</p>
+  </body>
+</html>
