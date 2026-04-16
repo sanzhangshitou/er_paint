@@ -1,0 +1,94 @@
+{
+    "list": [
+        {
+            "id": "laoshu",
+            "name": "老鼠",
+            "path": "./images/laoshu.png"
+        },
+        {
+            "id": "niu",
+            "name": "牛",
+            "path": "./images/niu.png"
+        },
+        {
+            "id": "tuzi",
+            "name": "兔子",
+            "path": "./images/tuzi.png"
+        },
+        {
+            "id": "houzi",
+            "name": "猴子",
+            "path": "./images/houzi.png"
+        },
+        {
+            "id": "gou",
+            "name": "小狗",
+            "path": "./images/gou.png"
+        },
+        {
+            "id": "ma",
+            "name": "小马",
+            "path": "./images/ma.png"
+        },
+        {
+            "id": "ji",
+            "name": "小鸡",
+            "path": "./images/ji.png"
+        },
+        {
+            "id": "yang",
+            "name": "小羊",
+            "path": "./images/yang.png"
+        },
+        {
+            "id": "zhu",
+            "name": "小猪",
+            "path": "./images/zhu.png"
+        },
+        {
+            "id": "laohu",
+            "name": "老虎",
+            "path": "./images/laohu.png"
+        },
+        {
+            "id": "she",
+            "name": "蛇",
+            "path": "./images/she.png"
+        },
+        {
+            "id": "long",
+            "name": "龙",
+            "path": "./images/long.png"
+        },
+        {
+            "id": "kl1",
+            "name": "恐龙",
+            "path": "./images/kl1.png"
+        },
+        {
+            "id": "kl2",
+            "name": "恐龙",
+            "path": "./images/kl2.png"
+        },
+        {
+            "id": "kl3",
+            "name": "恐龙",
+            "path": "./images/kl3.png"
+        },
+        {
+            "id": "kl4",
+            "name": "恐龙",
+            "path": "./images/kl4.png"
+        },
+        {
+            "id": "kl5",
+            "name": "恐龙",
+            "path": "./images/kl5.png"
+        },
+        {
+            "id": "kl6",
+            "name": "恐龙",
+            "path": "./images/kl6.png"
+        }
+    ]
+}
