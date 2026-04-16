@@ -42,7 +42,8 @@ export const usePaintStore = defineStore('paint', () => {
     '#cbd5e1',
   ]
 
-  const SIZES = [8, 16, 26]
+  const MIN_BRUSH_SIZE = 4
+  const MAX_BRUSH_SIZE = 36
 
   function getImagePath(imageName: string): string {
     const key = `/src/static/images/${imageName}`
@@ -81,7 +82,7 @@ export const usePaintStore = defineStore('paint', () => {
   }
 
   function selectSize(nextSize: number) {
-    brushSize.value = nextSize
+    brushSize.value = Math.min(MAX_BRUSH_SIZE, Math.max(MIN_BRUSH_SIZE, nextSize))
   }
 
   function saveCanvasData(dataUrl: string) {
@@ -100,7 +101,8 @@ export const usePaintStore = defineStore('paint', () => {
     color,
     brushSize,
     COLORS,
-    SIZES,
+    MIN_BRUSH_SIZE,
+    MAX_BRUSH_SIZE,
     loadConfig,
     selectTool,
     selectColor,

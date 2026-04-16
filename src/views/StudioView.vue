@@ -134,53 +134,54 @@ async function downloadArtwork() {
 
             <!-- Size Presets -->
             <div class="tool-row tool-row-size">
-              <div class="size-presets" aria-label="粗细">
-                <button
-                  v-for="size in store.SIZES"
-                  :key="size"
-                  class="size-choice"
-                  :class="{ active: store.brushSize === size }"
-                  type="button"
-                  :aria-label="`画笔大小 ${size}`"
-                  @click="store.selectSize(size)"
-                >
+              <div class="size-slider" aria-label="粗细">
+                <span class="size-slider-label">细</span>
+                <input
+                  class="size-range"
+                  type="range"
+                  :min="store.MIN_BRUSH_SIZE"
+                  :max="store.MAX_BRUSH_SIZE"
+                  :value="store.brushSize"
+                  aria-label="调整画笔粗细"
+                  @input="store.selectSize(Number(($event.target as HTMLInputElement).value))"
+                />
+                <span class="size-slider-label">粗</span>
+                <div class="size-preview" aria-hidden="true">
                   <span
-                    class="size-dot"
-                    :style="{ width: `${size}px`, height: `${size}px` }"
+                    class="size-preview-dot"
+                    :style="{ width: `${store.brushSize}px`, height: `${store.brushSize}px` }"
                   ></span>
-                </button>
+                </div>
               </div>
             </div>
 
-            <!-- Download Button -->
-            <div class="tool-row">
-              <button
-                class="icon-button cta-button full-row-button"
-                type="button"
-                aria-label="保存图片"
-                @click="downloadArtwork"
-              >
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M6 4h9l3 3v13H6z" />
-                  <path d="M9 4v5h6V4" />
-                  <path d="M9 17h6" />
-                </svg>
-              </button>
-            </div>
+            <div class="tool-row tool-row-actions">
+              <div class="action-row">
+                <button
+                  class="icon-button cta-button full-row-button"
+                  type="button"
+                  aria-label="保存图片"
+                  @click="downloadArtwork"
+                >
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M6 4h9l3 3v13H6z" />
+                    <path d="M9 4v5h6V4" />
+                    <path d="M9 17h6" />
+                  </svg>
+                </button>
 
-            <!-- Back Button -->
-            <div class="tool-row">
-              <button
-                class="icon-button back-button full-row-button"
-                type="button"
-                aria-label="返回"
-                @click="goBack"
-              >
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M14.5 5 7.5 12l7 7" />
-                  <path d="M8.5 12h8" />
-                </svg>
-              </button>
+                <button
+                  class="icon-button back-button full-row-button"
+                  type="button"
+                  aria-label="返回"
+                  @click="goBack"
+                >
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M14.5 5 7.5 12l7 7" />
+                    <path d="M8.5 12h8" />
+                  </svg>
+                </button>
+              </div>
             </div>
           </section>
         </aside>

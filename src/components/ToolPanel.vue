@@ -34,17 +34,23 @@ const store = usePaintStore()
     </button>
   </div>
 
-  <div class="size-presets">
-    <button
-      v-for="size in store.SIZES"
-      :key="size"
-      class="size-choice"
-      :class="{ active: store.brushSize === size }"
-      type="button"
-      :aria-label="`画笔大小 ${size}`"
-      @click="store.selectSize(size)"
-    >
-      <span class="size-dot" :style="{ width: `${size}px`, height: `${size}px` }"></span>
-    </button>
+  <div class="size-slider" aria-label="粗细">
+    <span class="size-slider-label">细</span>
+    <input
+      class="size-range"
+      type="range"
+      :min="store.MIN_BRUSH_SIZE"
+      :max="store.MAX_BRUSH_SIZE"
+      :value="store.brushSize"
+      aria-label="调整画笔粗细"
+      @input="store.selectSize(Number(($event.target as HTMLInputElement).value))"
+    />
+    <span class="size-slider-label">粗</span>
+    <div class="size-preview" aria-hidden="true">
+      <span
+        class="size-preview-dot"
+        :style="{ width: `${store.brushSize}px`, height: `${store.brushSize}px` }"
+      ></span>
+    </div>
   </div>
 </template>
